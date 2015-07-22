@@ -5,7 +5,7 @@
 }
 p {
 	text-align: justify;
-	text-justify: inter-word;
+	/*text-justify: inter-word;*/
 }
 a {
 	text-decoration: none;
@@ -32,7 +32,7 @@ a:hover {
 	height: 7.2rem;
 }
 .brief_info  {
-	margin: 0.25rem auto 1rem 0.25rem;
+	margin: 1rem auto 1rem 1rem;
 }
 .brief_info p {
 	 font-size: 0.9rem;
@@ -52,6 +52,6 @@ a:hover {
 	margin: 0.75rem 1rem auto;
 }
 .detail_info p {
-	font-size: 0.75rem;
+	font-size: 0.8rem;
 	text-indent: 2em;
 }
