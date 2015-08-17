@@ -1,3 +1,5 @@
+// ad main.js
+
 var visualWidth = $('#snowflake').width();
 var visualHeight = $('#snowflake').height();
 var snowt;
@@ -144,7 +146,6 @@ function bounceInRight(element) {
 	element.addClass('animated bounceInRight');
 }
 
-
 function setCenter(element) {
 	element.css({
 		left:  $('#container').width()/2 - element.width()/2
@@ -178,7 +179,6 @@ function snowflake() {
             'position': 'absolute',
             'backgroundSize': 'cover',
             'zIndex': 100000,
-            // 'top': '-41px',
             'backgroundImage': 'url(' + url + ')'
         }).addClass('snowRoll');
     }
@@ -186,7 +186,6 @@ function snowflake() {
     snowt = setInterval(function() {
         // 运动的轨迹
         var startPositionLeft = Math.random() * visualWidth - 100,
-        // var	startPositionLeft = 100,
         	startPositionTop = -41,
             startOpacity    = 1,
             endPositionTop  = visualHeight - 40,
@@ -200,41 +199,104 @@ function snowflake() {
         // 创建一个雪花
         var $flake = createSnowBox();
 
-        // 设计起点位置
+        // 设计终点位置
         $flake.css({
-        	top: startPositionTop,
-            left: startPositionLeft,
+        	top: endPositionTop,
+            left: endPositionLeft,
             opacity : randomStart
         });
 
         // 加入到容器
         $flakeContainer.append($flake);
 
-  //       var transform = ["-webkit-transform","-ms-transform","-moz-transform","transform"],
-		// transition = ["-webkit-transition","-ms-transition","-moz-transition","transition"];
-  //       var traslate = (endPositionLeft - startPositionLeft) + 'px,' + (endPositionTop - startPositionTop) +'px, 0px';
-		// $flake.css({
-		// 	"transition":"all "+duration+"ms ease-out",
-		// 	"transform":"translate3d("+traslate+")"
-		// });
-		// $flake[0].addEventListener('webkitTransitionEnd', $flakeContainer.removeChild(this), false);
-
-		// $flake.css({
-		// 	transition: {
-		// 		top: endPositionTop,
-  //           	left: endPositionLeft,
-  //           	opacity: 0.7
-		// 	} + duration+' ease-out'
-		// })
-        // 开始执行动画
-        $flake.transition({
-            top: endPositionTop,
-            left: endPositionLeft,
-            opacity: 0.7
-        }, duration, 'ease-out', function() {
-            $(this).remove() //结束后删除
-        });
-        
+        var transform = ["-webkit-transform","-ms-transform","-moz-transform","transform"],
+		transition = ["-webkit-transition","-ms-transition","-moz-transition","transition"];
+        var traslate = (startPositionLeft - endPositionLeft) + 'px,' + (startPositionTop - endPositionTop) +'px, 0px';
+		$flake.css({
+			"transition":"all "+duration+"ms ease-out",
+			"transform":"translate3d("+traslate+")"
+		});  
+		// $flake[0].addEventListener('webkitAnimationEnd', $flakeContainer[0].removeChild($flake[0]));    
     }, 2000);
 
 }
+
+
+
+//swipe
+cid = 0;
+var total = 6;
+var defaults = {
+	'loop': false,
+	'duration': 1000,
+	'easing': 'ease-in-out',
+	'keyboard' : true,//是否支持键盘
+};
+var options = {};
+var opts = $.extend({}, defaults , options||{});
+var container = $('#container');
+var upObj = $("#up_icon");
+var win = $(window);
+
+documentWidth = $('#container').width()
+documentHeight = $('#container').height();
+
+function moveSectionUp() {
+	if(cid < (total-1)) {
+		cid++;
+	}else if(opts.loop) {
+		cid = 0;
+	}
+	scrollPage();
+}
+
+function moveSectionDown() {
+	if(cid > 0) {
+		cid--;
+	}else if(opts.loop) {
+		cid = total - 1;
+	}
+	scrollPage();
+}
+
+function scrollPage() {
+	// event.preventDefault();
+	var transform = ["-webkit-transform","-ms-transform","-moz-transform","transform"],
+		transition = ["-webkit-transition","-ms-transition","-moz-transition","transition"];
+	var traslate = "0px, -"+(cid*documentHeight)+"px, 0px";
+	container.css({
+		"transition":"all "+opts.duration+"ms "+opts.easing,
+		"transform":"translate3d("+traslate+")"
+	});
+	initPage();
+}
+
+//绑定键盘事件
+function keyDown(){
+	var keydownId;
+	win.keydown(function(event){
+		clearTimeout(keydownId);
+		keydownId = setTimeout(function(){
+			var keyCode = event.keyCode;
+			if(keyCode == 38){
+				moveSectionUp();
+			}else if(keyCode == 40){
+				moveSectionDown();
+			}
+		},150);
+	});
+}
+document.addEventListener('touchmove',function(event){
+	event.preventDefault();
+});
+
+upObj.tap(function(event){
+	moveSectionUp();
+});
+
+container.swipeUp(function(event) {
+	moveSectionUp();
+})
+container.swipeDown(function(event) {
+	moveSectionDown();
+})
