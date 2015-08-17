@@ -6,4 +6,4 @@
 ###团队介绍
 我们的队名：【Nua✧】。
     
-团队成员是：[njzyfr](https://github.com/njzyfr)
+团队成员是：[njzyfr](https://github.com/njzyfr), [igongqin](https://github.com/igongqin), [Luojiamin](https://github.com/Luojiamin), [Melanie-BUPT](https://github.com/Melanie-BUPT), [wlei-in-bupt](https://github.com/wlei-in-bupt)
