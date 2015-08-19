@@ -29,6 +29,9 @@ function initPage() {
 			section5Anim();
 			break;		
 		case 5:
+			if(opts.loop) {
+				clearInterval(snowt);
+			}
 			section6Anim();
 			break;		
 	}	
