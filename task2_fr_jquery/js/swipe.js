@@ -228,7 +228,7 @@ function snowflake() {
 cid = 0;
 var total = 6;
 var defaults = {
-	'loop': false,
+	'loop': true,
 	'duration': 1000,
 	'easing': 'ease-in-out',
 	'keyboard' : true,//是否支持键盘
@@ -238,6 +238,7 @@ var opts = $.extend({}, defaults , options||{});
 var container = $('#container');
 var upObj = $("#up_icon");
 var win = $(window);
+var canScroll = true;
 
 documentWidth = $('#container').width()
 documentHeight = $('#container').height();
@@ -249,29 +250,36 @@ var endy;
 function moveSectionUp() {
 	if(cid < (total-1)) {
 		cid++;
+		scrollPage();
 	}else if(opts.loop) {
 		cid = 0;
+		scrollPage();
 	}
-	scrollPage();
 }
 
 function moveSectionDown() {
 	if(cid > 0) {
 		cid--;
+		scrollPage();
 	}else if(opts.loop) {
 		cid = total - 1;
+		scrollPage();
 	}
-	scrollPage();
+	
 }
 
 function scrollPage() {
 	// event.preventDefault();
+	canScroll = false;
 	var transform = ["-webkit-transform","-ms-transform","-moz-transform","transform"],
 		transition = ["-webkit-transition","-ms-transition","-moz-transition","transition"];
 	var traslate = "0px, -"+(cid*documentHeight)+"px, 0px";
 	container.css({
 		"transition":"all "+opts.duration+"ms "+opts.easing,
 		"transform":"translate3d("+traslate+")"
+	});
+	container.on("webkitTransitionEnd msTransitionend mozTransitionend transitionend",function(){
+		canScroll = true;
 	});
 	initPage();
 }
@@ -284,13 +292,29 @@ function keyDown(){
 		keydownId = setTimeout(function(){
 			var keyCode = event.keyCode;
 			if(keyCode == 38){
-				moveSectionUp();
-			}else if(keyCode == 40){
 				moveSectionDown();
+			}else if(keyCode == 40){
+				moveSectionUp();
 			}
 		},150);
 	});
 }
+//重写鼠标滑动事件
+$(document).on("mousewheel DOMMouseScroll", MouseWheelHandler);
+function MouseWheelHandler(e) {
+	e.preventDefault();
+	var value = e.originalEvent.wheelDelta || -e.originalEvent.detail;
+	var delta = Math.max(-1, Math.min(1, value));
+	if(canScroll){
+		if (delta < 0) {
+			moveSectionUp();
+		}else {
+			moveSectionDown();
+		}
+	}
+	return false;
+}
+
 
 document.addEventListener('touchstart',function(event){
     startx = event.touches[0].pageX;
@@ -332,4 +356,7 @@ $("#up_icon")[0].addEventListener('touchend',function(event) {
 
     if( Math.abs( deltax ) < 0.3*documentWidth && Math.abs( deltay ) < 0.3*documentWidth )
     	moveSectionUp();
+});
+$("#up_icon")[0].addEventListener('click',function(event) {
+	moveSectionUp();
 });
