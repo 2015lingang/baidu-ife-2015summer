@@ -1,15 +1,54 @@
 var visualWidth = $('#snowflake').width();
 var visualHeight = $('#snowflake').height();
-var snowt;
+var snowt, pcFlag;
 
 $(function(){
 	setCenter($('#up_icon'));
 	$('#up_icon').addClass('up');	
 	initPage();
-	if(opts.keyboard) {
-		keyDown();
-	}
+    pcFlag = IsPC();
+    if(pcFlag) {
+    	//重写鼠标滑动事件
+		$(document).on("mousewheel DOMMouseScroll", MouseWheelHandler);
+		function MouseWheelHandler(e) {
+			e.preventDefault();
+			var value = e.originalEvent.wheelDelta || -e.originalEvent.detail;
+			var delta = Math.max(-1, Math.min(1, value));
+			if(canScroll){
+				if (delta < 0) {
+					moveSectionUp();
+				}else {
+					moveSectionDown();
+				}
+			}
+			return false;
+		}
+
+		$("#up_icon")[0].addEventListener('click',function(event) {
+			moveSectionUp();
+		});
+
+		if(opts.keyboard) {
+			keyDown();
+		}
+    }	
 })
+
+function IsPC() {
+    var userAgentInfo = navigator.userAgent;
+    var Agents = ["Android", "iPhone",
+                "SymbianOS", "Windows Phone",
+                "iPad", "iPod"];
+    var flag = true;
+    for (var v = 0; v < Agents.length; v++) {
+        if (userAgentInfo.indexOf(Agents[v]) > 0) {
+            flag = false;
+            break;
+        }
+    }
+    return flag;
+}
+
 function initPage() {
 	switch (cid) {
 		case 0:
@@ -302,21 +341,7 @@ function keyDown(){
 		},150);
 	});
 }
-//重写鼠标滑动事件
-$(document).on("mousewheel DOMMouseScroll", MouseWheelHandler);
-function MouseWheelHandler(e) {
-	e.preventDefault();
-	var value = e.originalEvent.wheelDelta || -e.originalEvent.detail;
-	var delta = Math.max(-1, Math.min(1, value));
-	if(canScroll){
-		if (delta < 0) {
-			moveSectionUp();
-		}else {
-			moveSectionDown();
-		}
-	}
-	return false;
-}
+
 
 
 document.addEventListener('touchstart',function(event){
@@ -360,6 +385,4 @@ $("#up_icon")[0].addEventListener('touchend',function(event) {
     if( Math.abs( deltax ) < 0.3*documentWidth && Math.abs( deltay ) < 0.3*documentWidth )
     	moveSectionUp();
 });
-$("#up_icon")[0].addEventListener('click',function(event) {
-	moveSectionUp();
-});
+
